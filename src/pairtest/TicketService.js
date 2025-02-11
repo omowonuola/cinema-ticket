@@ -17,7 +17,7 @@ export default class TicketService {
   constructor(
     paymentService = new TicketPaymentService(), 
     reservationService = new SeatReservationService()
-) {
+  ) {
     this.#paymentService = paymentService;
     this.#reservationService = reservationService;
   }
@@ -32,6 +32,8 @@ export default class TicketService {
 
         this.#validateAccountId(accountId);
         this.#validateTicketRequests(ticketTypeRequests);
+
+        const ticketCounts = this.#calculateTicketCounts(ticketTypeRequests);
       }
 
 
@@ -43,7 +45,7 @@ export default class TicketService {
       if (!Number.isInteger(accountId) || accountId <= 0) {
         throw new InvalidPurchaseException('Invalid account ID');
       }
-  }
+    }
 
 
       /**
@@ -58,5 +60,17 @@ export default class TicketService {
         if (!requests.every(request => request instanceof TicketTypeRequest)) {
         throw new InvalidPurchaseException('Invalid ticket request format');
         }
+      }
+
+    /**
+     * Calculate the counts for each ticket type
+     * @private
+     */
+    #calculateTicketCounts(requests) {
+      return requests.reduce((counts, request) => {
+      const type = request.getTicketType();
+      counts[type] = (counts[type] || 0) + request.getNoOfTickets();
+      return counts;
+      }, {});
     }
 }
