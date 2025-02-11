@@ -22,25 +22,26 @@ export default class TicketService {
     this.#reservationService = reservationService;
   }
 
-      /**
-   * Purchase tickets for the given account
-   * @param {number} accountId - The account ID making the purchase
-   * @param {...TicketTypeRequest} ticketTypeRequests - The ticket requests
-   * @throws {InvalidPurchaseException} If the purchase request is invalid
-   */
+     /**
+     * Purchase tickets for the given account
+     * @param {number} accountId - The account ID making the purchase
+     * @param {...TicketTypeRequest} ticketTypeRequests - The ticket requests
+     * @throws {InvalidPurchaseException} If the purchase request is invalid
+     */
       purchaseTickets(accountId, ...ticketTypeRequests) {
 
         this.#validateAccountId(accountId);
         this.#validateTicketRequests(ticketTypeRequests);
 
         const ticketCounts = this.#calculateTicketCounts(ticketTypeRequests);
+        this.#validatePurchaseRules(ticketCounts);
       }
 
 
-         /**
-   * Validate the account ID
-   * @private
-   */
+    /**
+    * Validate the account ID
+    * @private
+    */
     #validateAccountId(accountId) {
       if (!Number.isInteger(accountId) || accountId <= 0) {
         throw new InvalidPurchaseException('Invalid account ID');
@@ -49,9 +50,9 @@ export default class TicketService {
 
 
       /**
-    * Validate the ticket requests
-    * @private
-    */
+      * Validate the ticket requests
+      * @private
+      */
       #validateTicketRequests(requests) {
         if (!requests || requests.length === 0) {
         throw new InvalidPurchaseException('No tickets requested');
@@ -62,7 +63,7 @@ export default class TicketService {
         }
       }
 
-    /**
+     /**
      * Calculate the counts for each ticket type
      * @private
      */
@@ -73,4 +74,28 @@ export default class TicketService {
       return counts;
       }, {});
     }
+
+
+   /**
+   * Validate the purchase rules
+   * @private
+   */
+  #validatePurchaseRules(ticketCounts) {
+    const totalTickets = Object.values(ticketCounts).reduce((sum, count) => sum + count, 0);
+    
+    // Rule: Maximum 25 tickets per purchase
+    if (totalTickets > this.#MAX_TICKETS) {
+      throw new InvalidPurchaseException(`Cannot purchase more than ${this.#MAX_TICKETS} tickets`);
+    }
+
+    // Rule: Must have adult ticket for child/infant tickets
+    const adultCount = ticketCounts['ADULT'] || 0;
+    const childCount = ticketCounts['CHILD'] || 0;
+    const infantCount = ticketCounts['INFANT'] || 0;
+
+    if ((childCount > 0 || infantCount > 0) && adultCount === 0) {
+      throw new InvalidPurchaseException('Child and infant tickets cannot be purchased without an adult ticket');
+    }
+
+  }
 }
