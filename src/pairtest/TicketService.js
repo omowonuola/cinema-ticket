@@ -35,6 +35,8 @@ export default class TicketService {
 
         const ticketCounts = this.#calculateTicketCounts(ticketTypeRequests);
         this.#validatePurchaseRules(ticketCounts);
+
+        const totalAmount = this.#calculateTotalAmount(ticketCounts);
       }
 
 
@@ -98,4 +100,15 @@ export default class TicketService {
     }
 
   }
+
+
+   /**
+   * Calculate the total amount to pay
+   * @private
+   */
+    #calculateTotalAmount(ticketCounts) {
+      return Object.entries(ticketCounts).reduce((total, [type, count]) => {
+        return total + (this.#TICKET_PRICES[type] * count);
+      }, 0);
+    }
 }
