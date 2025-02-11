@@ -31,6 +31,7 @@ export default class TicketService {
       purchaseTickets(accountId, ...ticketTypeRequests) {
 
         this.#validateAccountId(accountId);
+        this.#validateTicketRequests(ticketTypeRequests);
       }
 
 
@@ -43,4 +44,19 @@ export default class TicketService {
         throw new InvalidPurchaseException('Invalid account ID');
       }
   }
+
+
+      /**
+    * Validate the ticket requests
+    * @private
+    */
+      #validateTicketRequests(requests) {
+        if (!requests || requests.length === 0) {
+        throw new InvalidPurchaseException('No tickets requested');
+        }
+
+        if (!requests.every(request => request instanceof TicketTypeRequest)) {
+        throw new InvalidPurchaseException('Invalid ticket request format');
+        }
+    }
 }
