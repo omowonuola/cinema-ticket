@@ -31,4 +31,29 @@ function testTicketPurchases() {
     } catch (error) {
         console.log('Error:', error.message);
     }
+
 }
+
+
+// Function to calculate and display ticket price
+function calculateTicketPrice(type, quantity) {
+    const prices = {
+        'INFANT': 0,
+        'CHILD': 15,
+        'ADULT': 25
+    };
+    const total = prices[type] * quantity;
+    console.log(`Price for ${quantity} ${type} ticket(s): £${total}`);
+    return total;
+}
+
+
+// Run the tests
+console.log('Starting Ticket Service Tests...');
+testTicketPurchases();
+
+// Example price calculations
+console.log('\n=== Ticket Price Calculations ===');
+calculateTicketPrice('ADULT', 2);
+calculateTicketPrice('CHILD', 2);
+calculateTicketPrice('INFANT', 1);
