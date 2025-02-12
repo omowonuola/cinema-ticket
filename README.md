@@ -22,7 +22,7 @@ A Node.js service for handling cinema ticket bookings with validation rules and 
 1. Clone the repository:
 ```bash
 git clone https://github.com/omowonuola/cinema-ticket
-cd javascript-cinema-tickets
+cd cinema-ticket
 ```
 
 2. Install dependencies:
