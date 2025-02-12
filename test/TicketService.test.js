@@ -47,6 +47,28 @@ describe('TicketService', () => {
           });
         });
 
+        it('should successfully purchase mixed tickets', () => {
+            const adultRequest = new TicketTypeRequest('ADULT', 2);
+            const childRequest = new TicketTypeRequest('CHILD', 1);
+            const infantRequest = new TicketTypeRequest('INFANT', 1);
+      
+            ticketService.purchaseTickets(1, adultRequest, childRequest, infantRequest);
+      
+            expect(mockPaymentService.lastPayment).to.deep.equal({
+              accountId: 1,
+              totalAmount: 65 // (2 * £25) + (1 * £15) + (1 * £0)
+            });
+            expect(mockReservationService.lastReservation).to.deep.equal({
+              accountId: 1,
+              totalSeats: 3 // 2 adults + 1 child (infant doesn't need a seat)
+            });
+        });
+
+        it('should reject invalid account ID', () => {
+            const request = new TicketTypeRequest('ADULT', 1);
+            expect(() => ticketService.purchaseTickets(0, request))
+              .to.throw(InvalidPurchaseException, 'Invalid account ID');
+        });
 
     });
 
