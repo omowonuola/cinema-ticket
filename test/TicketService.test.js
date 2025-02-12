@@ -70,6 +70,12 @@ describe('TicketService', () => {
               .to.throw(InvalidPurchaseException, 'Invalid account ID');
         });
 
+        it('should reject purchase without adult tickets', () => {
+            const request = new TicketTypeRequest('CHILD', 1);
+            expect(() => ticketService.purchaseTickets(1, request))
+            .to.throw(InvalidPurchaseException, 'Child and infant tickets cannot be purchased without an adult ticket');
+        });
+
     });
 
 });
