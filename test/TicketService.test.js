@@ -18,7 +18,6 @@ class MockReservationService {
 }
 
 
-
 describe('TicketService', () => {
     let ticketService;
     let mockPaymentService;

@@ -90,12 +90,12 @@ export default class TicketService {
   #validatePurchaseRules(ticketCounts) {
     const totalTickets = Object.values(ticketCounts).reduce((sum, count) => sum + count, 0);
     
-    // Rule: Maximum 25 tickets per purchase
+    // Maximum 25 tickets per purchase
     if (totalTickets > this.#MAX_TICKETS) {
       throw new InvalidPurchaseException(`Cannot purchase more than ${this.#MAX_TICKETS} tickets`);
     }
 
-    // Rule: Must have adult ticket for child/infant tickets
+    // Must have adult ticket for child/infant tickets
     const adultCount = ticketCounts['ADULT'] || 0;
     const childCount = ticketCounts['CHILD'] || 0;
     const infantCount = ticketCounts['INFANT'] || 0;
@@ -122,7 +122,7 @@ export default class TicketService {
    * @private
    */
   #calculateTotalSeats(ticketCounts) {
-    // Note: Infants don't need seats as they sit on adult laps
+    // Infants don't need seats as they sit on adult laps
     return (ticketCounts['ADULT'] || 0) + (ticketCounts['CHILD'] || 0);
   }
 
