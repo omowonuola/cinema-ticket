@@ -22,22 +22,27 @@ export default class TicketService {
     this.#reservationService = reservationService;
   }
 
-     /**
-     * Purchase tickets for the given account
-     * @param {number} accountId - The account ID making the purchase
-     * @param {...TicketTypeRequest} ticketTypeRequests - The ticket requests
-     * @throws {InvalidPurchaseException} If the purchase request is invalid
-     */
-      purchaseTickets(accountId, ...ticketTypeRequests) {
+    /**
+   * Purchase tickets for the given account
+   * @param {number} accountId - The account ID making the purchase
+   * @param {...TicketTypeRequest} ticketTypeRequests - The ticket requests
+   * @throws {InvalidPurchaseException} If the purchase request is invalid
+   */
+    purchaseTickets(accountId, ...ticketTypeRequests) {
 
-        this.#validateAccountId(accountId);
-        this.#validateTicketRequests(ticketTypeRequests);
+      this.#validateAccountId(accountId);
+      this.#validateTicketRequests(ticketTypeRequests);
 
-        const ticketCounts = this.#calculateTicketCounts(ticketTypeRequests);
-        this.#validatePurchaseRules(ticketCounts);
+      const ticketCounts = this.#calculateTicketCounts(ticketTypeRequests);
+      this.#validatePurchaseRules(ticketCounts);
 
-        const totalAmount = this.#calculateTotalAmount(ticketCounts);
-      }
+      const totalAmount = this.#calculateTotalAmount(ticketCounts);
+      const totalSeats = this.#calculateTotalSeats(ticketCounts);
+
+      // Process payment and reserve seats
+      this.#paymentService.makePayment(accountId, totalAmount);
+      this.#reservationService.reserveSeat(accountId, totalSeats);
+    }
 
 
     /**
@@ -111,4 +116,14 @@ export default class TicketService {
         return total + (this.#TICKET_PRICES[type] * count);
       }, 0);
     }
+
+   /**
+   * Calculate the total seats to reserve
+   * @private
+   */
+  #calculateTotalSeats(ticketCounts) {
+    // Note: Infants don't need seats as they sit on adult laps
+    return (ticketCounts['ADULT'] || 0) + (ticketCounts['CHILD'] || 0);
+  }
+
 }
