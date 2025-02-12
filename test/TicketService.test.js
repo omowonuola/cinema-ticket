@@ -76,6 +76,12 @@ describe('TicketService', () => {
             .to.throw(InvalidPurchaseException, 'Child and infant tickets cannot be purchased without an adult ticket');
         });
 
+        it('should reject purchase exceeding maximum tickets', () => {
+            const request = new TicketTypeRequest('ADULT', 26);
+            expect(() => ticketService.purchaseTickets(1, request))
+            .to.throw(InvalidPurchaseException, 'Cannot purchase more than 25 tickets');
+        });
+
     });
 
 });
